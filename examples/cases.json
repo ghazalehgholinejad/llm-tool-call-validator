@@ -1,0 +1,42 @@
+[
+  {
+    "file": "valid_search.json",
+    "expected_valid": true
+  },
+  {
+    "file": "valid_persian.json",
+    "expected_valid": true
+  },
+  {
+    "file": "unknown_tool.json",
+    "expected_valid": false
+  },
+  {
+    "file": "missing_query.json",
+    "expected_valid": false
+  },
+  {
+    "file": "string_integer.json",
+    "expected_valid": false
+  },
+  {
+    "file": "boolean_integer.json",
+    "expected_valid": false
+  },
+  {
+    "file": "excessive_results.json",
+    "expected_valid": false
+  },
+  {
+    "file": "extra_argument.json",
+    "expected_valid": false
+  },
+  {
+    "file": "empty_query.json",
+    "expected_valid": false
+  },
+  {
+    "file": "unsupported_language.json",
+    "expected_valid": false
+  }
+]

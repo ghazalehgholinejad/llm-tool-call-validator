@@ -1,0 +1,7 @@
+{
+  "name": "search_documents",
+  "arguments": {
+    "query": "RAG",
+    "top_k": "3"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "search_documents",
+  "arguments": {
+    "top_k": 2
+  }
+}

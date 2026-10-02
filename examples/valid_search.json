@@ -1,0 +1,7 @@
+{
+  "name": "search_documents",
+  "arguments": {
+    "query": "retrieval evaluation",
+    "top_k": 3
+  }
+}

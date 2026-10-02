@@ -1,0 +1,8 @@
+{
+  "name": "search_documents",
+  "arguments": {
+    "query": "RAG",
+    "top_k": 2,
+    "admin": true
+  }
+}

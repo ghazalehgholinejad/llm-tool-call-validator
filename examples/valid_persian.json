@@ -1,0 +1,8 @@
+{
+  "name": "search_documents",
+  "arguments": {
+    "query": "ارزیابی بازیابی",
+    "top_k": 2,
+    "language": "fa"
+  }
+}
