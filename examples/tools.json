@@ -25,5 +25,31 @@
       "top_k"
     ],
     "additionalProperties": false
+  },
+  "forecast_energy": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "site_id": {
+        "type": "string",
+        "pattern": "^site-[0-9]{3}$"
+      },
+      "horizon_hours": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 168
+      },
+      "resolution": {
+        "enum": [
+          "hourly",
+          "daily"
+        ]
+      }
+    },
+    "required": [
+      "site_id",
+      "horizon_hours"
+    ],
+    "additionalProperties": false
   }
 }

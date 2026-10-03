@@ -1,0 +1,7 @@
+{"name": "search_documents", "arguments": {"query": "energy demand", "top_k": 3}}
+{"name": "forecast_energy", "arguments": {"site_id": "site-001", "horizon_hours": 24, "resolution": "hourly"}}
+{"name": "forecast_energy", "arguments": {"site_id": "site-001", "horizon_hours": 0}}
+{"name": "forecast_energy", "arguments": {"site_id": "site-001", "horizon_hours": "24"}}
+{"name": "forecast_energy", "arguments": {"site_id": "site-001", "horizon_hours": true}}
+{"name": "forecast_energy", "arguments": {"site_id": "site-001"}}
+{"name": "forecast_energy", "arguments": {"site_id": "site-001", "horizon_hours": 24, "admin": true}}

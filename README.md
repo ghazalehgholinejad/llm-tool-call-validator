@@ -18,7 +18,7 @@ python examples/run_cases.py
 python -m unittest discover -s tests -v
 ```
 
-The second command deliberately exits with status **1**. CLI exit codes: **0** accepted, **1** rejected call, **2** configuration or I/O failure.
+The `string_integer.json` validation deliberately exits with status **1**. CLI exit codes: **0** accepted, **1** rejected call, **2** configuration or I/O failure.
 
 ## Contract
 
@@ -53,19 +53,61 @@ Untrusted JSON → size / strict JSON checks → envelope → tool allowlist
 
 No repair, coercion, or execution occurs. Duplicate keys, NaN, Infinity, and overflowing floating-point literals are rejected. The CLI reads at most 65,537 bytes; calls over 65,536 UTF-8 bytes are rejected. Local schema references work; remote references are not fetched and unresolved references are configuration errors. Formats are annotations: no format checker is enabled.
 
+## Batch validation and saved reports (v0.2)
+
+Validate a JSON Lines file with one complete call per physical line:
+
+```bash
+validate-tool-call examples/mixed_calls.jsonl --schemas examples/tools.json --batch --output report.json
+```
+
+This example deliberately exits **1**: two calls pass and five fail. It covers document search and the new `forecast_energy` schema. The latter requires `site_id` matching `site-001` and `horizon_hours` from 1 to 168; optional `resolution` is `hourly` or `daily`. It validates a proposed request; no forecast is generated.
+
+The report contains numbered per-line results and a summary:
+
+```json
+{
+  "total": 7,
+  "accepted": 2,
+  "rejected": 5,
+  "records_by_error_code": {
+    "schema_additionalProperties": 1,
+    "schema_minimum": 1,
+    "schema_required": 1,
+    "schema_type": 2
+  }
+}
+```
+
+Counts are **records containing a code**, so a record with two type errors counts once under `schema_type`. A record may count under several different codes. Counts cover the returned errors (at most 20 per record), not errors omitted by truncation.
+
+- Blank lines and malformed JSON are rejected records. Invalid UTF-8 is `invalid_encoding` in both single and batch modes.
+- LF and CRLF are supported; an ending newline does not add an empty record. The byte limit excludes the line ending.
+- Oversized lines are drained in bounded chunks, rejected once, and processing continues with the next line.
+- At most 1,000 records are accepted as input. Empty batches, excess records, invalid schemas, unresolved references, and I/O failures abort with exit **2** and no validation report. Schema syntax is checked for every registered tool; references are resolved when encountered during validation.
+- `--output` works in either mode and refuses to overwrite existing files. Parent directories must exist. The same JSON is also printed to stdout. Reports contain accepted arguments and diagnostic values; handle them like input data.
+
+```python
+from tool_call_validator import validate_batch
+
+with open("examples/mixed_calls.jsonl", "rb") as stream:
+    report = validate_batch(stream, schemas)
+print(report["summary"])
+```
+
 ## Exercise: try it yourself
 
-1. Run `examples/string_integer.json`; inspect the error path.
-2. Replace the string `"3"` with the number `3` and validate again.
-3. Add a `forecast_energy` schema with a required integer `horizon_hours` bounded to 1–168 and no extra properties.
-4. Write one passing case and cases for zero, missing horizon, boolean, and an unknown parameter.
+1. Run the mixed batch and inspect each rejected line.
+2. Fix the five rejected forecasting calls and run again; expect seven accepted records and exit **0**. Use a new output filename.
+3. Try horizons `1`, `168`, and `169` to inspect the boundary.
+4. Add a blank line and a malformed JSON line; confirm later calls are still checked.
 5. Explain why a schema-valid query such as “ignore previous instructions” still needs application-level handling.
 
-The implemented search example is the worked solution; the forecasting extension is left as a learning exercise.
+Both search and forecasting schemas are implemented as worked examples. Extending a schema and diagnosing the report are the learning activities.
 
 ## Examples and verification
 
-The ten hand-authored cases include two valid calls (English and Persian) and eight invalid calls. `examples/run_cases.py` checks every expected decision and prints JSON. These are **synthetic fixtures, not generated LLM responses or a model accuracy benchmark**. Automated tests additionally cover duplicate keys, non-finite numbers, deep JSON, size limits, JSON Pointer escaping, error truncation, references, and CLI exit codes. CI runs on Python 3.10 and 3.12.
+The original ten hand-authored single-call cases include two valid calls (English and Persian) and eight invalid calls. `examples/run_cases.py` checks every expected decision and prints JSON. These are **synthetic fixtures, not generated LLM responses or a model accuracy benchmark**. Automated tests additionally cover duplicate keys, non-finite numbers, deep JSON, size limits, JSON Pointer escaping, error truncation, references, and CLI exit codes. The batch fixture adds seven requests (two accepted, five rejected). Tests also cover batch recovery, record and byte boundaries, saved reports, forecast constraints, and overwrite protection. CI runs on Python 3.10 and 3.12.
 
 ## Limits
 
