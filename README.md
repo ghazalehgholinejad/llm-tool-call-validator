@@ -95,6 +95,18 @@ with open("examples/mixed_calls.jsonl", "rb") as stream:
 print(report["summary"])
 ```
 
+## Interactive HTML report (v0.3)
+
+```bash
+validate-tool-call examples/mixed_calls.jsonl --schemas examples/tools.json --batch --format html --output report.html
+```
+
+The example exits **1** because five calls are rejected; the report is still saved. Open `report.html` in a browser to see total/accepted/rejected counts, filter by status, and inspect error codes, JSON Pointer paths, and messages. Accepted arguments are expandable. Single-call reports work too: omit `--batch` and supply a JSON file.
+
+The HTML is self-contained: no CDN, server, API key, or internet connection is needed to view it. All results remain readable without JavaScript; filter controls appear when JavaScript is enabled. The CLI still prints JSON to stdout and preserves existing exit codes and overwrite protection. `--format html` requires `--output`; the default saved format remains JSON. File extensions do not determine the format.
+
+Untrusted values are HTML-escaped and never inserted into executable JavaScript. A restrictive content policy blocks external resources. Reports still contain diagnostic values and accepted arguments: do not publish reports containing private inputs. Rejected tool names and raw arguments are not retained by the validator; those cards show “Rejected call” with their available errors. Counts include the whole input even when cards are filtered. Browser printing reflects the current filter.
+
 ## Exercise: try it yourself
 
 1. Run the mixed batch and inspect each rejected line.
