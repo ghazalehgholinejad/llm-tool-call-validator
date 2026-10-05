@@ -107,6 +107,17 @@ The HTML is self-contained: no CDN, server, API key, or internet connection is n
 
 Untrusted values are HTML-escaped and never inserted into executable JavaScript. A restrictive content policy blocks external resources. Reports still contain diagnostic values and accepted arguments: do not publish reports containing private inputs. Rejected tool names and raw arguments are not retained by the validator; those cards show “Rejected call” with their available errors. Counts include the whole input even when cards are filtered. Browser printing reflects the current filter.
 
+## Find recurring errors (v0.4)
+
+HTML reports now include an error-frequency table, a text search box, an error-code selector, and a reset button. Use the same HTML export command above.
+
+- **Combine filters:** status, exact error code, and search text must all match. Selecting an error while viewing accepted calls produces no matches; Reset restores all results.
+- **Search:** case-insensitive literal substring matching over the card text, including expandable accepted arguments, error messages, paths, and line labels. Unicode NFKC normalization handles compatibility forms; this is not fuzzy or semantic search, and does not normalize Persian letter variants. Accepted argument strings remain JSON-escaped, so non-ASCII values there are searched by their displayed escapes.
+- **Frequency:** counts records containing each returned error code, once per record per code. Sorted by descending count, then code. Counts remain for the full report while filtering; omitted errors are not counted.
+- **Empty results:** an explicit no-match message and “Showing X of Y” counter clarify the active selection.
+
+Everything still runs offline. Search uses text comparisons, not regular expressions or HTML insertion. With JavaScript disabled, the frequency table and all result cards remain visible; interactive controls stay hidden. Node.js is used only by the development interaction test, not by the Python package or exported report.
+
 ## Exercise: try it yourself
 
 1. Run the mixed batch and inspect each rejected line.
