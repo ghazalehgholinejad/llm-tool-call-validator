@@ -147,3 +147,20 @@ The original ten hand-authored single-call cases include two valid calls (Englis
 - [JSON Schema Draft 2020-12](https://json-schema.org/draft/2020-12)
 
 Original exercise code and synthetic fixtures; validation uses the `jsonschema` library. MIT licensed.
+
+
+## Trusted policy checks (v0.5)
+
+Schema-valid calls can still exceed a user's permissions. A separate, deny-by-default security checker accepts a **trusted application-supplied policy**:
+
+```bash
+python -m tool_call_validator.security examples/valid_persian.json --schemas examples/tools.json --policy examples/security_policy.json
+```
+
+Policies explicitly grant tools, constrain exact string values (for example resource IDs), and impose nonnegative integer ceilings. Missing constrained arguments are denied even when optional in the schema. Unknown policy keys are configuration errors. JSON duplicate keys are rejected. No tools execute; exit codes are 0 allowed, 1 denied, 2 configuration/input error.
+
+The security report omits arguments and schema error text. Existing validation/batch reports are unchanged and can include sensitive input values. The new checker is single-call only; it does not change batch or HTML validation into authorization.
+
+Policy must be derived from authenticated user context outside the model. The downstream tool must enforce permissions too. This prototype implements neither authentication nor approvals, sandboxing, nested field constraints, SSRF protection or general prompt-injection detection. Check and execute the same immutable request with the same policy; do not let model content set its own privileges.
+
+See [Persian security lesson](docs/SECURITY_FA.md) and [OWASP Excessive Agency](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/) for the trust-boundary rationale.
