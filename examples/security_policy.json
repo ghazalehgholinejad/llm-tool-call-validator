@@ -1,0 +1,1 @@
+{"tools":{"search_documents":{"allowed_values":{"language":["fa"]},"max_values":{"top_k":3}},"forecast_energy":{"allowed_values":{"site_id":["site-001"]},"max_values":{"horizon_hours":24}}}}
